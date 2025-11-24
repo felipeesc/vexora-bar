@@ -29,6 +29,19 @@ public class GlobalExceptionHandler {
                 .body(error(ex.getMessage()));
     }
 
+    @ExceptionHandler(ProdutoNotFoundException.class)
+    public ResponseEntity<?> handleProdutoNotFound(ProdutoNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(error(ex.getMessage()));
+    }
+
+    @ExceptionHandler(EstoqueInsuficienteException.class)
+    public ResponseEntity<?> handleEstoqueInsuficiente(EstoqueInsuficienteException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(error(ex.getMessage()));
+    }
+
+
     private Map<String, Object> error(String msg) {
         return Map.of(
                 "timestamp", Instant.now().toString(),
