@@ -1,4 +1,8 @@
 package com.product.vexora.service;
 
-public class UserService {
+import com.product.vexora.entity.User;
+
+public interface UserService {
+
+    User loadByUsername(String username);
 }
