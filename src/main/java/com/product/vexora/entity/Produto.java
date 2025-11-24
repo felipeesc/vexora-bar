@@ -29,6 +29,7 @@ public class Produto {
     @Enumerated(EnumType.STRING)
     private UnidadeMedida unidade;
     private BigDecimal precoCompra;
+    private BigDecimal precoVenda;
     private BigDecimal estoqueAtual;
     private BigDecimal estoqueMinimo;
 }

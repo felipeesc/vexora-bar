@@ -10,6 +10,7 @@ public record ProdutoRequestDto(
         CategoriaProduto categoria,
         UnidadeMedida unidade,
         BigDecimal precoCompra,
+        BigDecimal precoVenda,
         BigDecimal estoqueAtual,
         BigDecimal estoqueMinimo
 ) {}

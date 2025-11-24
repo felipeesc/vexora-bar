@@ -65,6 +65,7 @@ public class ProdutoServiceImpl implements ProdutoService {
         produto.setCategoria(dto.categoria());
         produto.setUnidade(dto.unidade());
         produto.setPrecoCompra(dto.precoCompra());
+        produto.setPrecoVenda(dto.precoVenda());
         produto.setEstoqueAtual(dto.estoqueAtual());
         produto.setEstoqueMinimo(dto.estoqueMinimo());
         return produto;
@@ -77,6 +78,7 @@ public class ProdutoServiceImpl implements ProdutoService {
                 produto.getCategoria(),
                 produto.getUnidade(),
                 produto.getPrecoCompra(),
+                produto.getPrecoVenda(),
                 produto.getEstoqueAtual(),
                 produto.getEstoqueMinimo()
         );
