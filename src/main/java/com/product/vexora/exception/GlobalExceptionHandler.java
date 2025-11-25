@@ -41,6 +41,23 @@ public class GlobalExceptionHandler {
                 .body(error(ex.getMessage()));
     }
 
+    @ExceptionHandler(MesaObrigatoriaException.class)
+    public ResponseEntity<?> handleMesaObrigatoria(MesaObrigatoriaException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(error(ex.getMessage()));
+    }
+
+    @ExceptionHandler(ComandaNaoEncontradaException.class)
+    public ResponseEntity<?> handleComandaNaoEncontrada(ComandaNaoEncontradaException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(error(ex.getMessage()));
+    }
+
+    @ExceptionHandler(ComandaFechadaException.class)
+    public ResponseEntity<?> handleComandaFechada(ComandaFechadaException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(error(ex.getMessage()));
+    }
 
     private Map<String, Object> error(String msg) {
         return Map.of(
