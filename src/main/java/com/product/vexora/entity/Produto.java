@@ -15,6 +15,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Entity
 @Data
+@Table(name = "tb_produto")
 public class Produto {
 
     @Id

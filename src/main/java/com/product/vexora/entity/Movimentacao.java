@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
+@Table(name = "tb_movimentacao")
 public class Movimentacao {
 
     @Id
