@@ -2,6 +2,7 @@ package com.product.vexora.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -15,8 +16,10 @@ import java.util.UUID;
 @Table(name = "tb_comanda")
 public class Comanda {
 
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @UuidGenerator
     private UUID id;
 
     private Integer mesa;

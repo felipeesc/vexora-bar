@@ -34,4 +34,18 @@ public class ComandaController {
     public ComandaResponseDTO fechar(@PathVariable UUID id) {
         return service.fecharComanda(id);
     }
+
+    @GetMapping("/{id}/calcular")
+    @PreAuthorize("isAuthenticated()")
+    public ComandaResponseDTO calcular(@PathVariable UUID id) {
+        return service.calcular(id);
+    }
+
+
+    @DeleteMapping("/item/{itemId}")
+    @PreAuthorize("isAuthenticated()")
+    public ComandaResponseDTO removerItem(@PathVariable UUID itemId) {
+        return service.removerItem(itemId);
+    }
+
 }
