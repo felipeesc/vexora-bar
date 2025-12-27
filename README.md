@@ -32,8 +32,6 @@ O projeto utiliza:
 - **Fechar comanda**  
   Finaliza a comanda, impedindo novas alterações.
 
-### Funcionalidades a desenvolver
-
 - **Buscar comanda por ID**  
   Retorna os dados completos de uma comanda específica.
 
