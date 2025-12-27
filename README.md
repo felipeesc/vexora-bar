@@ -1,6 +1,7 @@
 # Vexora API
 
 Vexora é uma aplicação **Spring Boot 4** que implementa autenticação JWT, gerenciamento de usuários e segurança básica com **Spring Security**.
+A Vexora API foi projetada para gerenciar comandas, produtos, estoque e relatórios.
 
 O projeto utiliza:
 
@@ -10,6 +11,91 @@ O projeto utiliza:
 - **Spring Data JPA**
 - **PostgreSQL**
 - **JWT (io.jsonwebtoken)**
+
+
+## 📋 Comandas
+
+### Funcionalidades já implementadas
+
+- **Abrir comanda**  
+  Cria uma nova comanda vinculada a uma mesa e, opcionalmente, a um cliente.
+
+- **Adicionar item à comanda**  
+  Adiciona produtos à comanda aberta e registra automaticamente a **movimentação de saída** no estoque.
+
+- **Remover item da comanda**  
+  Remove um item previamente adicionado e registra a **entrada de estoque** correspondente (cancelamento).
+
+- **Calcular comanda**  
+  Calcula o valor total da comanda em tempo real, sem necessidade de fechá-la.
+
+- **Fechar comanda**  
+  Finaliza a comanda, impedindo novas alterações.
+
+### Funcionalidades a desenvolver
+
+- **Buscar comanda por ID**  
+  Retorna os dados completos de uma comanda específica.
+
+- **Listar / filtrar comandas**  
+  Permite buscar todas as comandas com filtros como:
+    - comandas abertas / fechadas
+    - período de datas
+    - mesa
+
+---
+
+## 📦 Produtos
+
+### Funcionalidades já implementadas
+
+- **Adicionar produto**  
+  Cadastra um novo produto com categoria, unidade de medida e controle de estoque.
+
+- **Editar produto**  
+  Atualiza informações do produto (preço, estoque mínimo, etc).
+
+- **Remover produto**  
+  Exclui um produto do sistema.
+
+- **Buscar produto por ID**  
+  Retorna os detalhes de um produto específico.
+
+- **Listar todos os produtos**  
+  Retorna todos os produtos cadastrados.
+
+---
+
+## 📊 Relatórios
+
+### Funcionalidades já implementadas
+
+- **Faturamento semanal**  
+  Retorna o total faturado em uma semana específica.
+
+- **Faturamento mensal**  
+  Retorna o total faturado no mês.
+
+- **Produto mais vendido na semana**  
+  Identifica o produto com maior volume de vendas na semana.
+
+- **Produto mais vendido no mês**  
+  Identifica o produto com maior volume de vendas no mês.
+
+### Funcionalidades a desenvolver
+
+- **Faturamento diário**  
+  Retorna o total faturado em um dia específico.
+
+- **Produto mais vendido no dia**  
+  Identifica o produto com maior saída diária.
+
+- **Relatório de estoque**  
+  Relatório contendo:
+    - estoque atual
+    - produtos abaixo do estoque mínimo
+    - histórico de movimentações
+
 
 ---
 
