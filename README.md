@@ -108,10 +108,10 @@ O projeto utiliza:
 ## Caso o container exista basta rodar 
 
 ```bash
- docker start vexora-postgres
+  docker start vexora-postgres
+
+
 ```
-
-
 > O banco estará disponível em `localhost:5433` com usuário `postgres` e senha `postgres`.
 
 ---
