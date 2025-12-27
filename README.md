@@ -19,6 +19,12 @@ O projeto utiliza:
   docker run -d --name vexora-postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=vexora -p 5433:5432 postgres:16
 
 ```
+## Caso o container exista basta rodar 
+
+```bash
+ docker start vexora-postgres
+```
+
 
 > O banco estará disponível em `localhost:5433` com usuário `postgres` e senha `postgres`.
 

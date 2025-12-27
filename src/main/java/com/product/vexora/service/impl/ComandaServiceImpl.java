@@ -7,14 +7,12 @@ import com.product.vexora.dto.ComandaResponseDTO;
 import com.product.vexora.entity.Comanda;
 import com.product.vexora.entity.ComandaItem;
 import com.product.vexora.entity.Produto;
-import com.product.vexora.exception.ComandaFechadaException;
-import com.product.vexora.exception.ComandaNaoEncontradaException;
-import com.product.vexora.exception.MesaObrigatoriaException;
-import com.product.vexora.exception.ProdutoNotFoundException;
+import com.product.vexora.exception.*;
 import com.product.vexora.repository.ComandaItemRepository;
 import com.product.vexora.repository.ComandaRepository;
 import com.product.vexora.repository.ProdutoRepository;
 import com.product.vexora.service.ComandaService;
+import com.product.vexora.service.MovimentacaoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +25,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ComandaServiceImpl implements ComandaService {
 
+    private final MovimentacaoService movimentacaoService;
     private final ComandaRepository comandaRepository;
     private final ComandaItemRepository itemRepository;
     private final ProdutoRepository produtoRepository;
@@ -64,13 +63,47 @@ public class ComandaServiceImpl implements ComandaService {
         ComandaItem item = new ComandaItem();
         item.setComanda(comanda);
         item.setProduto(produto);
+        item.setDataHora(LocalDateTime.now());
         item.setQuantidade(dto.quantidade());
 
         itemRepository.save(item);
         comanda.getItens().add(item);
 
+        movimentacaoService.registrarSaidaPorComanda(
+                produto,
+                dto.quantidade(),
+                comanda.getId()
+        );
+
         return toResponse(comanda);
     }
+
+    public ComandaResponseDTO removerItem(UUID itemId) {
+
+        ComandaItem item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new ItemNaoEncontradoException(itemId));
+
+        Comanda comanda = item.getComanda();
+
+        if (!comanda.isAberta()) {
+            throw new ComandaFechadaException();
+        }
+
+        Produto produto = item.getProduto();
+        int quantidade = item.getQuantidade();
+
+        itemRepository.delete(item);
+        comanda.getItens().remove(item);
+
+        movimentacaoService.registrarEntradaPorCancelamento(
+                produto,
+                quantidade,
+                comanda.getId()
+        );
+
+        return toResponse(comanda);
+    }
+
 
     public ComandaResponseDTO fecharComanda(UUID comandaId) {
 
@@ -88,6 +121,16 @@ public class ComandaServiceImpl implements ComandaService {
 
         return toResponse(comanda);
     }
+
+    @Override
+    public ComandaResponseDTO calcular(UUID comandaId) {
+
+        Comanda comanda = comandaRepository.findById(comandaId)
+                .orElseThrow(ComandaNaoEncontradaException::new);
+
+        return toResponse(comanda);
+    }
+
 
 
     public List<ComandaResponseDTO> listarAbertas() {
@@ -109,6 +152,7 @@ public class ComandaServiceImpl implements ComandaService {
                 produto.getCategoria(),
                 produto.getUnidade(),
                 item.getQuantidade(),
+                item.getDataHora(),
                 produto.getPrecoVenda(),
                 totalItem
         );

@@ -12,6 +12,11 @@ public interface ComandaService {
 
     ComandaResponseDTO adicionarItem(ComandaItemRequestDTO dto);
 
+    ComandaResponseDTO removerItem(UUID itemId);
+
     ComandaResponseDTO fecharComanda(UUID id);
+
+    ComandaResponseDTO calcular(UUID comandaId);
+
 }
 

@@ -12,7 +12,9 @@ import com.product.vexora.service.MovimentacaoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -53,6 +55,32 @@ public class MovimentacaoServiceImpl implements MovimentacaoService {
         } else {
             produto.setEstoqueAtual(produto.getEstoqueAtual().subtract(dto.quantidade()));
         }
+    }
+
+    @Override
+    public void registrarSaidaPorComanda(Produto produto, int quantidade, UUID comandaId) {
+
+        MovimentacaoDto dto = new MovimentacaoDto(
+                produto.getId(),
+                TipoMovimentacao.SAIDA,
+                BigDecimal.valueOf(quantidade),
+                "Saída por comanda " + comandaId
+        );
+
+        realizarMovimentacao(dto);
+    }
+
+    @Override
+    public void registrarEntradaPorCancelamento(Produto produto, int quantidade, UUID comandaId) {
+
+        MovimentacaoDto dto = new MovimentacaoDto(
+                produto.getId(),
+                TipoMovimentacao.ENTRADA,
+                BigDecimal.valueOf(quantidade),
+                "Estorno de comanda " + comandaId
+        );
+
+        realizarMovimentacao(dto);
     }
 
 }
