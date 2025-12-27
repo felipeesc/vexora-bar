@@ -32,8 +32,6 @@ O projeto utiliza:
 - **Fechar comanda**  
   Finaliza a comanda, impedindo novas alterações.
 
-### Funcionalidades a desenvolver
-
 - **Buscar comanda por ID**  
   Retorna os dados completos de uma comanda específica.
 
@@ -220,29 +218,69 @@ Para acessar qualquer endpoint protegido, adicione o token JWT no cabeçalho `Au
 ```
 com.product.vexora
 │
-├── entity
-│   └── User.java
+├── config
+│   ├── JwtAuthenticationFilter.java
+│   └── SecurityConfig.java
 │
-├── repository
-│   └── UserRepository.java
-│
-├── service
-│   ├── AuthService.java (interface e impl)
-│   ├── JwtService.java (interface e impl)
-│   └── UserService.java (interface e impl)
+├── controller
+│   ├── AuthController.java
+│   ├── ComandaController.java
+│   ├── MovimentacaoController.java
+│   ├── ProdutoController.java
+│   └── RelatorioController.java
 │
 ├── dto
-│   ├── LoginDto.java
-│   └── SignupDto.java
+│   ├── ComandaItemDTO.java
+│   ├── ComandaItemRequestDTO.java
+│   ├── ComandaRequestDTO.java
+│   ├── ComandaResponseDTO.java
+│   ├── FaturamentoDTO.java
+│   ├── LoginDTO.java
+│   ├── MovimentacaoDTO.java
+│   ├── ProdutoMaisVendidoDTO.java
+│   ├── ProdutoRequestDTO.java
+│   ├── ProdutoResponseDTO.java
+│   └── SignupDTO.java
+│
+├── entity
+│   ├── Comanda.java
+│   ├── ComandaItem.java
+│   ├── Funcionario.java
+│   ├── Movimentacao.java
+│   ├── Produto.java
+│   └── User.java
+│
+├── enums
+│   ├── CategoriaProduto
+│   ├── Role
+│   ├── TipoMovimentacao
+│   └── UnidadeMedida
 │
 ├── exception
-│   ├── InvalidPasswordException.java
-│   ├── UserAlreadyExistsException.java
-│   └── UserNotFoundException.java
+│   ├── InvalidPasswordException
+│   ├── UserAlreadyExistsException
+│   └── UserNotFoundException
 │
-└── security
-    ├── JwtAuthenticationFilter.java
-    └── SecurityConfig.java
+├── repository
+│   ├── ComandaItemRepository
+│   ├── ComandaRepository
+│   ├── MovimentacaoRepository
+│   ├── ProdutoRepository
+│   └── UserRepository
+│
+├── service
+│   ├── AuthService (interface e impl)
+│   ├── ComandaService (interface e impl)
+│   ├── JwtService (interface e impl)
+│   ├── MovimentacaoService (interface e impl)
+│   ├── ProdutoService (interface e impl)
+│   ├── RelatorioService (interface e impl)
+│   └── UserService (interface e impl)
+└──── 
+
+
+
+
 ```
 
 ---
