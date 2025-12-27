@@ -12,4 +12,6 @@ public interface ComandaRepository extends JpaRepository<Comanda, UUID> {
 
     List<Comanda> findByAbertaTrue();
 
+    long countByMesaAndAbertaTrue(Integer mesa);
+
 }

@@ -4,6 +4,8 @@ import com.product.vexora.dto.ComandaItemRequestDTO;
 import com.product.vexora.dto.ComandaRequestDTO;
 import com.product.vexora.dto.ComandaResponseDTO;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 public interface ComandaService {
@@ -16,7 +18,16 @@ public interface ComandaService {
 
     ComandaResponseDTO fecharComanda(UUID id);
 
-    ComandaResponseDTO calcular(UUID comandaId);
+    ComandaResponseDTO calcular(UUID id);
 
+    ComandaResponseDTO buscarPorId(UUID id);
+
+    List<ComandaResponseDTO> listar(
+            Boolean aberta,
+            Integer mesa,
+            LocalDateTime inicio,
+            LocalDateTime fim
+    );
 }
+
 

@@ -14,6 +14,7 @@ import com.product.vexora.repository.ProdutoRepository;
 import com.product.vexora.service.ComandaService;
 import com.product.vexora.service.MovimentacaoService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -36,17 +37,68 @@ public class ComandaServiceImpl implements ComandaService {
             throw new MesaObrigatoriaException();
         }
 
+        String identificador = dto.identificador();
+        if (identificador == null || identificador.isBlank()) {
+            identificador = gerarIdentificadorAutomatico(dto.mesa());
+        }
+
         Comanda comanda = new Comanda();
         comanda.setMesa(dto.mesa());
         comanda.setCliente(dto.cliente());
+        comanda.setIdentificador(identificador);
         comanda.setAberta(true);
         comanda.setAbertura(LocalDateTime.now());
 
-        comandaRepository.save(comanda);
+        saveComanda(comanda);
 
         return toResponse(comanda);
     }
 
+
+
+    private Comanda saveComanda(Comanda comanda) {
+        try {
+            return comandaRepository.save(comanda);
+        } catch (DataIntegrityViolationException ex) {
+            throw new ComandaAbertaException(
+                    comanda.getMesa(),
+                    comanda.getIdentificador()
+            );
+        }
+    }
+
+
+    @Override
+    public ComandaResponseDTO buscarPorId(UUID id) {
+        Comanda comanda = comandaRepository.findById(id)
+                .orElseThrow(ComandaNaoEncontradaException::new);
+
+        return toResponse(comanda);
+    }
+
+    @Override
+    public List<ComandaResponseDTO> listar(
+            Boolean aberta,
+            Integer mesa,
+            LocalDateTime inicio,
+            LocalDateTime fim
+    ) {
+
+        List<Comanda> comandas = comandaRepository.findAll();
+
+        return comandas.stream()
+                .filter(c -> aberta == null || c.isAberta() == aberta)
+                .filter(c -> mesa == null || c.getMesa().equals(mesa))
+                .filter(c -> {
+                    if (inicio == null && fim == null) return true;
+                    LocalDateTime abertura = c.getAbertura();
+                    if (inicio != null && abertura.isBefore(inicio)) return false;
+                    if (fim != null && abertura.isAfter(fim)) return false;
+                    return true;
+                })
+                .map(this::toResponse)
+                .toList();
+    }
 
     public ComandaResponseDTO adicionarItem(ComandaItemRequestDTO dto) {
 
@@ -117,7 +169,7 @@ public class ComandaServiceImpl implements ComandaService {
         comanda.setAberta(false);
         comanda.setFechamento(LocalDateTime.now());
 
-        comandaRepository.save(comanda);
+        saveComanda(comanda);
 
         return toResponse(comanda);
     }
@@ -130,7 +182,6 @@ public class ComandaServiceImpl implements ComandaService {
 
         return toResponse(comanda);
     }
-
 
 
     public List<ComandaResponseDTO> listarAbertas() {
@@ -178,5 +229,11 @@ public class ComandaServiceImpl implements ComandaService {
                 itens,
                 total
         );
+    }
+
+    private String gerarIdentificadorAutomatico(Integer mesa) {
+        long total = comandaRepository.countByMesaAndAbertaTrue(mesa);
+
+        return "COMANDA-" + (total + 1);
     }
 }
