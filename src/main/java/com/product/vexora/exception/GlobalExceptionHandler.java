@@ -2,14 +2,30 @@ package com.product.vexora.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<?> handleValidationErrors(MethodArgumentNotValidException ex) {
+        Map<String, String> fieldErrors = new HashMap<>();
+        ex.getBindingResult().getFieldErrors()
+                .forEach(err -> fieldErrors.put(err.getField(), err.getDefaultMessage()));
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", Instant.now().toString());
+        body.put("message", "Erro de validação");
+        body.put("errors", fieldErrors);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    }
 
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<?> handleUserExists(UserAlreadyExistsException ex) {
@@ -56,6 +72,18 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ComandaFechadaException.class)
     public ResponseEntity<?> handleComandaFechada(ComandaFechadaException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(error(ex.getMessage()));
+    }
+
+    @ExceptionHandler(ComandaAbertaException.class)
+    public ResponseEntity<?> handleComandaAberta(ComandaAbertaException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(error(ex.getMessage()));
+    }
+
+    @ExceptionHandler(ItemNaoEncontradoException.class)
+    public ResponseEntity<?> handleItemNaoEncontrado(ItemNaoEncontradoException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(error(ex.getMessage()));
     }
 

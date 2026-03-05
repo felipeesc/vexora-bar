@@ -4,8 +4,11 @@ import com.product.vexora.dto.ComandaItemRequestDTO;
 import com.product.vexora.dto.ComandaRequestDTO;
 import com.product.vexora.dto.ComandaResponseDTO;
 import com.product.vexora.service.ComandaService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,8 +25,8 @@ public class ComandaController {
 
     @PostMapping("/abrir")
     @PreAuthorize("isAuthenticated()")
-    public ComandaResponseDTO abrir(@RequestBody ComandaRequestDTO dto) {
-        return service.abrirComanda(dto);
+    public ResponseEntity<ComandaResponseDTO> abrir(@Valid @RequestBody ComandaRequestDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.abrirComanda(dto));
     }
 
     @GetMapping("/{id}")
@@ -43,11 +46,10 @@ public class ComandaController {
         return service.listar(aberta, mesa, inicio, fim);
     }
 
-
     @PostMapping("/item")
     @PreAuthorize("isAuthenticated()")
-    public ComandaResponseDTO adicionarItem(@RequestBody ComandaItemRequestDTO dto) {
-        return service.adicionarItem(dto);
+    public ResponseEntity<ComandaResponseDTO> adicionarItem(@Valid @RequestBody ComandaItemRequestDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.adicionarItem(dto));
     }
 
     @PostMapping("/{id}/fechar")

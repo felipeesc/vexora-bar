@@ -4,7 +4,7 @@ import java.util.UUID;
 
 public class ItemNaoEncontradoException extends RuntimeException {
     public ItemNaoEncontradoException(UUID itemId) {
-        super("Item não encontradO.");
+        super("Item não encontrado: " + itemId);
     }
 }
 

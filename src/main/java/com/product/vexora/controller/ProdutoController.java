@@ -3,7 +3,10 @@ package com.product.vexora.controller;
 import com.product.vexora.dto.ProdutoRequestDto;
 import com.product.vexora.dto.ProdutoResponseDto;
 import com.product.vexora.service.ProdutoService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,18 +28,19 @@ public class ProdutoController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping
-    public ProdutoResponseDto create(@RequestBody ProdutoRequestDto dto) {
-        return produtoService.criar(dto);
+    public ResponseEntity<ProdutoResponseDto> create(@Valid @RequestBody ProdutoRequestDto dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(produtoService.criar(dto));
     }
 
     @PreAuthorize("isAuthenticated()")
     @PutMapping("/{id}")
-    public ProdutoResponseDto update(@PathVariable UUID id, @RequestBody ProdutoRequestDto dto) {
+    public ProdutoResponseDto update(@PathVariable UUID id, @Valid @RequestBody ProdutoRequestDto dto) {
         return produtoService.atualizar(id, dto);
     }
 
     @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable UUID id) {
         produtoService.deletar(id);
     }

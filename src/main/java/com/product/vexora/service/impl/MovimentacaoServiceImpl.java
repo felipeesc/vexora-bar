@@ -1,6 +1,7 @@
 package com.product.vexora.service.impl;
 
 import com.product.vexora.dto.MovimentacaoDto;
+import com.product.vexora.dto.MovimentacaoResponseDTO;
 import com.product.vexora.entity.Movimentacao;
 import com.product.vexora.entity.Produto;
 import com.product.vexora.enums.TipoMovimentacao;
@@ -11,6 +12,7 @@ import com.product.vexora.repository.ProdutoRepository;
 import com.product.vexora.service.MovimentacaoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -24,7 +26,8 @@ public class MovimentacaoServiceImpl implements MovimentacaoService {
     private final MovimentacaoRepository movimentacaoRepository;
 
     @Override
-    public Movimentacao realizarMovimentacao(MovimentacaoDto dto) {
+    @Transactional
+    public MovimentacaoResponseDTO realizarMovimentacao(MovimentacaoDto dto) {
 
         Produto produto = produtoRepository.findById(dto.produtoId())
                 .orElseThrow(() -> new ProdutoNotFoundException(dto.produtoId()));
@@ -46,7 +49,8 @@ public class MovimentacaoServiceImpl implements MovimentacaoService {
         movimentacao.setMotivo(dto.motivo());
         movimentacao.setDataHora(LocalDateTime.now());
 
-        return movimentacaoRepository.save(movimentacao);
+        Movimentacao salva = movimentacaoRepository.save(movimentacao);
+        return toResponse(salva);
     }
 
     private void atualizarEstoque(Produto produto, MovimentacaoDto dto) {
@@ -81,6 +85,17 @@ public class MovimentacaoServiceImpl implements MovimentacaoService {
         );
 
         realizarMovimentacao(dto);
+    }
+
+    private MovimentacaoResponseDTO toResponse(Movimentacao movimentacao) {
+        return new MovimentacaoResponseDTO(
+                movimentacao.getId(),
+                movimentacao.getProduto().getNome(),
+                movimentacao.getTipo(),
+                movimentacao.getQuantidade(),
+                movimentacao.getMotivo(),
+                movimentacao.getDataHora()
+        );
     }
 
 }

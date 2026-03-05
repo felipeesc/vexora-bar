@@ -16,6 +16,7 @@ import com.product.vexora.service.MovimentacaoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -31,6 +32,8 @@ public class ComandaServiceImpl implements ComandaService {
     private final ComandaItemRepository itemRepository;
     private final ProdutoRepository produtoRepository;
 
+    @Override
+    @Transactional
     public ComandaResponseDTO abrirComanda(ComandaRequestDTO dto) {
 
         if (dto.mesa() == null) {
@@ -77,29 +80,21 @@ public class ComandaServiceImpl implements ComandaService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ComandaResponseDTO> listar(
             Boolean aberta,
             Integer mesa,
             LocalDateTime inicio,
             LocalDateTime fim
     ) {
-
-        List<Comanda> comandas = comandaRepository.findAll();
-
-        return comandas.stream()
-                .filter(c -> aberta == null || c.isAberta() == aberta)
-                .filter(c -> mesa == null || c.getMesa().equals(mesa))
-                .filter(c -> {
-                    if (inicio == null && fim == null) return true;
-                    LocalDateTime abertura = c.getAbertura();
-                    if (inicio != null && abertura.isBefore(inicio)) return false;
-                    if (fim != null && abertura.isAfter(fim)) return false;
-                    return true;
-                })
+        return comandaRepository.filtrar(aberta, mesa, inicio, fim)
+                .stream()
                 .map(this::toResponse)
                 .toList();
     }
 
+    @Override
+    @Transactional
     public ComandaResponseDTO adicionarItem(ComandaItemRequestDTO dto) {
 
         Comanda comanda = comandaRepository.findById(dto.comandaId())
@@ -130,6 +125,8 @@ public class ComandaServiceImpl implements ComandaService {
         return toResponse(comanda);
     }
 
+    @Override
+    @Transactional
     public ComandaResponseDTO removerItem(UUID itemId) {
 
         ComandaItem item = itemRepository.findById(itemId)
@@ -157,6 +154,8 @@ public class ComandaServiceImpl implements ComandaService {
     }
 
 
+    @Override
+    @Transactional
     public ComandaResponseDTO fecharComanda(UUID comandaId) {
 
         Comanda comanda = comandaRepository.findById(comandaId)
@@ -226,6 +225,8 @@ public class ComandaServiceImpl implements ComandaService {
                 comanda.getMesa(),
                 comanda.getCliente(),
                 comanda.isAberta(),
+                comanda.getAbertura(),
+                comanda.getFechamento(),
                 itens,
                 total
         );

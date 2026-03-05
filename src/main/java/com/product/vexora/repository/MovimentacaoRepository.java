@@ -15,25 +15,28 @@ import java.util.UUID;
 @Repository
 public interface MovimentacaoRepository extends JpaRepository<Movimentacao, UUID> {
 
-
     @Query("SELECT new com.product.vexora.dto.FaturamentoDTO(" +
-            "SUM(m.quantidade * m.produto.precoVenda), " +
-            "SUM(m.quantidade * (m.produto.precoVenda - m.produto.precoCompra))) " +
+            "COALESCE(SUM(m.quantidade * m.produto.precoVenda), 0), " +
+            "COALESCE(SUM(m.quantidade * (m.produto.precoVenda - m.produto.precoCompra)), 0)) " +
             "FROM Movimentacao m " +
-            "WHERE m.dataHora BETWEEN :inicio AND :fim")
+            "WHERE m.tipo = com.product.vexora.enums.TipoMovimentacao.SAIDA " +
+            "AND m.dataHora BETWEEN :inicio AND :fim")
     FaturamentoDTO faturamentoPeriodo(@Param("inicio") LocalDateTime inicio,
                                       @Param("fim") LocalDateTime fim);
-
-
 
     @Query("SELECT new com.product.vexora.dto.ProdutoMaisVendidoDto(" +
             "m.produto.nome, SUM(m.quantidade), m.produto.estoqueAtual) " +
             "FROM Movimentacao m " +
-            "WHERE m.tipo = 'saida' AND m.dataHora BETWEEN :inicio AND :fim " +
+            "WHERE m.tipo = com.product.vexora.enums.TipoMovimentacao.SAIDA " +
+            "AND m.dataHora BETWEEN :inicio AND :fim " +
             "GROUP BY m.produto.nome, m.produto.estoqueAtual " +
             "ORDER BY SUM(m.quantidade) DESC")
     List<ProdutoMaisVendidoDto> produtosMaisVendidos(@Param("inicio") LocalDateTime inicio,
                                                      @Param("fim") LocalDateTime fim);
+
+    List<Movimentacao> findByDataHoraBetween(LocalDateTime inicio, LocalDateTime fim);
+
+    List<Movimentacao> findByProdutoIdAndDataHoraBetween(UUID produtoId, LocalDateTime inicio, LocalDateTime fim);
 
 }
 

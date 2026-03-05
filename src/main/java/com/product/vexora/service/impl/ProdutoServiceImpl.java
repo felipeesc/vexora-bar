@@ -41,6 +41,7 @@ public class ProdutoServiceImpl implements ProdutoService {
         existente.setCategoria(dto.categoria());
         existente.setUnidade(dto.unidade());
         existente.setPrecoCompra(dto.precoCompra());
+        existente.setPrecoVenda(dto.precoVenda());
         existente.setEstoqueAtual(dto.estoqueAtual());
         existente.setEstoqueMinimo(dto.estoqueMinimo());
         Produto atualizado = produtoRepository.save(existente);

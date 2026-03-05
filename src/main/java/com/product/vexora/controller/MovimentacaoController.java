@@ -1,9 +1,12 @@
 package com.product.vexora.controller;
 
 import com.product.vexora.dto.MovimentacaoDto;
-import com.product.vexora.entity.Movimentacao;
+import com.product.vexora.dto.MovimentacaoResponseDTO;
 import com.product.vexora.service.MovimentacaoService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,7 +22,8 @@ public class MovimentacaoController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping
-    public Movimentacao movimentar(@RequestBody MovimentacaoDto req) {
-        return service.realizarMovimentacao(req);
+    public ResponseEntity<MovimentacaoResponseDTO> movimentar(@Valid @RequestBody MovimentacaoDto req) {
+        MovimentacaoResponseDTO response = service.realizarMovimentacao(req);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

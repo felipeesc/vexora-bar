@@ -15,6 +15,6 @@ spring:
     show-sql: true
 
 jwt:
-  secret: oJ8w3uPqRhnbxP5UkHoFXJvawwD8/v8WNMuMdzYi+Bc=
-  expiration: 86400000
+  secret: ${JWT_SECRET:oJ8w3uPqRhnbxP5UkHoFXJvawwD8/v8WNMuMdzYi+Bc=}
+  expiration: ${JWT_EXPIRATION:86400000}
 

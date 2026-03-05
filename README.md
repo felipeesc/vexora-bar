@@ -68,11 +68,17 @@ O projeto utiliza:
 
 ### Funcionalidades já implementadas
 
+- **Faturamento diário**  
+  Retorna o total faturado em um dia específico.
+
 - **Faturamento semanal**  
   Retorna o total faturado em uma semana específica.
 
 - **Faturamento mensal**  
   Retorna o total faturado no mês.
+
+- **Produto mais vendido no dia**  
+  Identifica o produto com maior saída diária.
 
 - **Produto mais vendido na semana**  
   Identifica o produto com maior volume de vendas na semana.
@@ -80,19 +86,11 @@ O projeto utiliza:
 - **Produto mais vendido no mês**  
   Identifica o produto com maior volume de vendas no mês.
 
-### Funcionalidades a desenvolver
-
-- **Faturamento diário**  
-  Retorna o total faturado em um dia específico.
-
-- **Produto mais vendido no dia**  
-  Identifica o produto com maior saída diária.
-
 - **Relatório de estoque**  
   Relatório contendo:
-    - estoque atual
+    - estoque atual de todos os produtos
     - produtos abaixo do estoque mínimo
-    - histórico de movimentações
+    - histórico de movimentações por período
 
 
 ---
@@ -128,11 +126,13 @@ spring:
     show-sql: true
 
 jwt:
-  secret: "SEU_TOKEN_BASE64_AQUI"
-  expiration: 86400000 
+  secret: ${JWT_SECRET:SEU_TOKEN_BASE64_AQUI}
+  expiration: ${JWT_EXPIRATION:86400000}
 ```
 
 > O segredo JWT deve ser uma **chave base64 com 256 bits ou mais**, gerada com o método `Keys.secretKeyFor(SignatureAlgorithm.HS256)`.
+> 
+> **Recomendado:** defina a variável de ambiente `JWT_SECRET` ao invés de deixar o segredo no arquivo de configuração.
 
 ---
 
