@@ -1,0 +1,22 @@
+meta {
+  name: Listar Comandas
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/comandas
+  body: none
+  auth: none
+}
+
+params:query {
+  ~aberta: true
+  ~mesa: 1
+  ~inicio: 2026-01-01T00:00:00
+  ~fim: 2026-12-31T23:59:59
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}

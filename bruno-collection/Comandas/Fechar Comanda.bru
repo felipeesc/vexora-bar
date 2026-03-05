@@ -1,0 +1,19 @@
+meta {
+  name: Fechar Comanda
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/comandas/:id/fechar
+  body: none
+  auth: none
+}
+
+params:path {
+  id: {{comandaId}}
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}

@@ -1,0 +1,24 @@
+meta {
+  name: Adicionar Item a Comanda
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/comandas/item
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+}
+
+body:json {
+  {
+    "comandaId": "{{comandaId}}",
+    "produtoId": "{{produtoId}}",
+    "quantidade": 2
+  }
+}

@@ -1,0 +1,15 @@
+meta {
+  name: Faturamento Mensal
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/relatorios/faturamento/mensal
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}

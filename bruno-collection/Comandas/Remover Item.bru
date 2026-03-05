@@ -1,0 +1,19 @@
+meta {
+  name: Remover Item da Comanda
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrl}}/comandas/item/:itemId
+  body: none
+  auth: none
+}
+
+params:path {
+  itemId: {{itemId}}
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}

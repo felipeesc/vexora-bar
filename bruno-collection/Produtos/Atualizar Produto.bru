@@ -1,0 +1,32 @@
+meta {
+  name: Atualizar Produto
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/produtos/:id
+  body: json
+  auth: none
+}
+
+params:path {
+  id: {{produtoId}}
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+}
+
+body:json {
+  {
+    "nome": "Brahma Lata 350ml",
+    "categoria": "CERVEJA",
+    "unidade": "LATA",
+    "precoCompra": 2.80,
+    "precoVenda": 6.00,
+    "estoqueAtual": 100,
+    "estoqueMinimo": 25
+  }
+}

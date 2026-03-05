@@ -1,0 +1,19 @@
+meta {
+  name: Deletar Produto
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrl}}/produtos/:id
+  body: none
+  auth: none
+}
+
+params:path {
+  id: {{produtoId}}
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}

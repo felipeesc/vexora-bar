@@ -1,0 +1,19 @@
+meta {
+  name: Calcular Comanda
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/comandas/:id/calcular
+  body: none
+  auth: none
+}
+
+params:path {
+  id: {{comandaId}}
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}

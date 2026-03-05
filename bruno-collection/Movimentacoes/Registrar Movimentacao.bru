@@ -1,0 +1,25 @@
+meta {
+  name: Registrar Movimentacao
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/movimentacoes
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+}
+
+body:json {
+  {
+    "produtoId": "{{produtoId}}",
+    "tipo": "ENTRADA",
+    "quantidade": 50,
+    "motivo": "Reposição de estoque semanal"
+  }
+}

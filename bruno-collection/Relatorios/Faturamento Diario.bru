@@ -1,0 +1,19 @@
+meta {
+  name: Faturamento Diario
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/relatorios/faturamento/diario
+  body: none
+  auth: none
+}
+
+params:query {
+  ~data: 2026-03-05
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}

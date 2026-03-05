@@ -1,0 +1,15 @@
+meta {
+  name: Faturamento Semanal
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/relatorios/faturamento/semanal
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}

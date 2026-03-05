@@ -1,0 +1,19 @@
+﻿meta {
+  name: Produtos Mais Vendidos no Dia
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/relatorios/produtos/mais-vendidos/dia
+  body: none
+  auth: none
+}
+
+params:query {
+  ~data: 2026-03-05
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}
