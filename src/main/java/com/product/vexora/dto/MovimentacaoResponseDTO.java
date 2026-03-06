@@ -12,7 +12,8 @@ public record MovimentacaoResponseDTO(
         TipoMovimentacao tipo,
         BigDecimal quantidade,
         String motivo,
+        String usuario,
 
-        @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
+        @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
         LocalDateTime dataHora
 ) {}

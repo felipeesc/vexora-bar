@@ -3,14 +3,21 @@ meta {
   type: http
   seq: 2
 }
+
 get {
   url: {{baseUrl}}/comandas/:id
   body: none
   auth: none
 }
+
 params:path {
   id: {{comandaId}}
 }
+
 headers {
   Authorization: Bearer {{token}}
+}
+
+vars:pre-request {
+  comandaId: 
 }

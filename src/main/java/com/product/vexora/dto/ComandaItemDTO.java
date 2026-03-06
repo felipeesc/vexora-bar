@@ -15,7 +15,7 @@ public record ComandaItemDTO(
         UnidadeMedida unidade,
         int quantidade,
 
-        @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
+        @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
         LocalDateTime dataHora,
 
         BigDecimal precoUnitario,

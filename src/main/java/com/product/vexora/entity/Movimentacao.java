@@ -31,6 +31,8 @@ public class Movimentacao {
 
     private String motivo;
 
+    private String usuario;
+
     @Column(nullable = false)
     private LocalDateTime dataHora;
 

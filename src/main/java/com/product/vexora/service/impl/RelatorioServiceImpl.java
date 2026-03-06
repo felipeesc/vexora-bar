@@ -96,6 +96,7 @@ public class RelatorioServiceImpl implements RelatorioService {
                         m.getTipo(),
                         m.getQuantidade(),
                         m.getMotivo(),
+                        m.getUsuario(),
                         m.getDataHora()
                 ))
                 .toList();

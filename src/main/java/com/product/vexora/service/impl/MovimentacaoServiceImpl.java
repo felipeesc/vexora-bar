@@ -11,6 +11,7 @@ import com.product.vexora.repository.MovimentacaoRepository;
 import com.product.vexora.repository.ProdutoRepository;
 import com.product.vexora.service.MovimentacaoService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,6 +48,7 @@ public class MovimentacaoServiceImpl implements MovimentacaoService {
         movimentacao.setTipo(dto.tipo());
         movimentacao.setQuantidade(dto.quantidade());
         movimentacao.setMotivo(dto.motivo());
+        movimentacao.setUsuario(getUsuarioLogado());
         movimentacao.setDataHora(LocalDateTime.now());
 
         Movimentacao salva = movimentacaoRepository.save(movimentacao);
@@ -64,11 +66,13 @@ public class MovimentacaoServiceImpl implements MovimentacaoService {
     @Override
     public void registrarSaidaPorComanda(Produto produto, int quantidade, UUID comandaId) {
 
+        String usuario = getUsuarioLogado();
+
         MovimentacaoDto dto = new MovimentacaoDto(
                 produto.getId(),
                 TipoMovimentacao.SAIDA,
                 BigDecimal.valueOf(quantidade),
-                "Saída por comanda " + comandaId
+                "Saída por comanda " + comandaId + " pelo usuário " + usuario
         );
 
         realizarMovimentacao(dto);
@@ -77,14 +81,21 @@ public class MovimentacaoServiceImpl implements MovimentacaoService {
     @Override
     public void registrarEntradaPorCancelamento(Produto produto, int quantidade, UUID comandaId) {
 
+        String usuario = getUsuarioLogado();
+
         MovimentacaoDto dto = new MovimentacaoDto(
                 produto.getId(),
                 TipoMovimentacao.ENTRADA,
                 BigDecimal.valueOf(quantidade),
-                "Estorno de comanda " + comandaId
+                "Estorno de comanda " + comandaId + " pelo usuário " + usuario
         );
 
         realizarMovimentacao(dto);
+    }
+
+    private String getUsuarioLogado() {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        return auth != null ? auth.getName() : "sistema";
     }
 
     private MovimentacaoResponseDTO toResponse(Movimentacao movimentacao) {
@@ -94,6 +105,7 @@ public class MovimentacaoServiceImpl implements MovimentacaoService {
                 movimentacao.getTipo(),
                 movimentacao.getQuantidade(),
                 movimentacao.getMotivo(),
+                movimentacao.getUsuario(),
                 movimentacao.getDataHora()
         );
     }
