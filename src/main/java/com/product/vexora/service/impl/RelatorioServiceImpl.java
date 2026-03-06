@@ -30,17 +30,23 @@ public class RelatorioServiceImpl implements RelatorioService {
     }
 
     @Override
-    public FaturamentoDTO faturamentoSemanal() {
-        LocalDateTime fim = LocalDateTime.now();
-        LocalDateTime inicio = fim.minusWeeks(1);
-        return movimentacaoRepository.faturamentoPeriodo(inicio, fim);
+    public FaturamentoDTO faturamentoSemanal(LocalDate referencia) {
+        LocalDate inicioSemana = referencia.with(java.time.DayOfWeek.MONDAY);
+        LocalDate fimSemana = inicioSemana.plusDays(6);
+        return movimentacaoRepository.faturamentoPeriodo(
+                inicioSemana.atStartOfDay(),
+                fimSemana.atTime(LocalTime.MAX)
+        );
     }
 
     @Override
-    public FaturamentoDTO faturamentoMensal() {
-        LocalDateTime fim = LocalDateTime.now();
-        LocalDateTime inicio = fim.minusMonths(1);
-        return movimentacaoRepository.faturamentoPeriodo(inicio, fim);
+    public FaturamentoDTO faturamentoMensal(LocalDate referencia) {
+        LocalDate inicioMes = referencia.withDayOfMonth(1);
+        LocalDate fimMes = referencia.withDayOfMonth(referencia.lengthOfMonth());
+        return movimentacaoRepository.faturamentoPeriodo(
+                inicioMes.atStartOfDay(),
+                fimMes.atTime(LocalTime.MAX)
+        );
     }
 
     @Override
@@ -51,17 +57,23 @@ public class RelatorioServiceImpl implements RelatorioService {
     }
 
     @Override
-    public List<ProdutoMaisVendidoDto> produtosMaisVendidosSemana() {
-        LocalDateTime fim = LocalDateTime.now();
-        LocalDateTime inicio = fim.minusWeeks(1);
-        return movimentacaoRepository.produtosMaisVendidos(inicio, fim);
+    public List<ProdutoMaisVendidoDto> produtosMaisVendidosSemana(LocalDate referencia) {
+        LocalDate inicioSemana = referencia.with(java.time.DayOfWeek.MONDAY);
+        LocalDate fimSemana = inicioSemana.plusDays(6);
+        return movimentacaoRepository.produtosMaisVendidos(
+                inicioSemana.atStartOfDay(),
+                fimSemana.atTime(LocalTime.MAX)
+        );
     }
 
     @Override
-    public List<ProdutoMaisVendidoDto> produtosMaisVendidosMes() {
-        LocalDateTime fim = LocalDateTime.now();
-        LocalDateTime inicio = fim.minusMonths(1);
-        return movimentacaoRepository.produtosMaisVendidos(inicio, fim);
+    public List<ProdutoMaisVendidoDto> produtosMaisVendidosMes(LocalDate referencia) {
+        LocalDate inicioMes = referencia.withDayOfMonth(1);
+        LocalDate fimMes = referencia.withDayOfMonth(referencia.lengthOfMonth());
+        return movimentacaoRepository.produtosMaisVendidos(
+                inicioMes.atStartOfDay(),
+                fimMes.atTime(LocalTime.MAX)
+        );
     }
 
     @Override

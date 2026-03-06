@@ -33,14 +33,18 @@ public class RelatorioController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/faturamento/semanal")
-    public FaturamentoDTO faturamentoSemanal() {
-        return relatorioService.faturamentoSemanal();
+    public FaturamentoDTO faturamentoSemanal(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data
+    ) {
+        return relatorioService.faturamentoSemanal(data != null ? data : LocalDate.now());
     }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/faturamento/mensal")
-    public FaturamentoDTO faturamentoMensal() {
-        return relatorioService.faturamentoMensal();
+    public FaturamentoDTO faturamentoMensal(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data
+    ) {
+        return relatorioService.faturamentoMensal(data != null ? data : LocalDate.now());
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -53,14 +57,18 @@ public class RelatorioController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/produtos/mais-vendidos/semana")
-    public List<ProdutoMaisVendidoDto> produtosMaisVendidosSemana() {
-        return relatorioService.produtosMaisVendidosSemana();
+    public List<ProdutoMaisVendidoDto> produtosMaisVendidosSemana(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data
+    ) {
+        return relatorioService.produtosMaisVendidosSemana(data != null ? data : LocalDate.now());
     }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/produtos/mais-vendidos/mes")
-    public List<ProdutoMaisVendidoDto> produtosMaisVendidosMes() {
-        return relatorioService.produtosMaisVendidosMes();
+    public List<ProdutoMaisVendidoDto> produtosMaisVendidosMes(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data
+    ) {
+        return relatorioService.produtosMaisVendidosMes(data != null ? data : LocalDate.now());
     }
 
     @PreAuthorize("isAuthenticated()")

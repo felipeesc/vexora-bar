@@ -12,12 +12,12 @@ import java.util.List;
 public interface RelatorioService {
 
     FaturamentoDTO faturamentoDiario(LocalDate data);
-    FaturamentoDTO faturamentoSemanal();
-    FaturamentoDTO faturamentoMensal();
+    FaturamentoDTO faturamentoSemanal(LocalDate referencia);
+    FaturamentoDTO faturamentoMensal(LocalDate referencia);
 
     List<ProdutoMaisVendidoDto> produtosMaisVendidosDia(LocalDate data);
-    List<ProdutoMaisVendidoDto> produtosMaisVendidosSemana();
-    List<ProdutoMaisVendidoDto> produtosMaisVendidosMes();
+    List<ProdutoMaisVendidoDto> produtosMaisVendidosSemana(LocalDate referencia);
+    List<ProdutoMaisVendidoDto> produtosMaisVendidosMes(LocalDate referencia);
 
     RelatorioEstoqueDTO relatorioEstoque();
     List<MovimentacaoResponseDTO> historicoMovimentacoes(LocalDate inicio, LocalDate fim);
