@@ -1,19 +1,19 @@
 package com.product.vexora.dto;
 
-import com.product.vexora.enums.CategoriaProduto;
 import com.product.vexora.enums.UnidadeMedida;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 public record ProdutoRequestDto(
         @NotBlank(message = "O nome do produto é obrigatório")
         String nome,
 
         @NotNull(message = "A categoria é obrigatória")
-        CategoriaProduto categoria,
+        UUID categoriaId,
 
         @NotNull(message = "A unidade de medida é obrigatória")
         UnidadeMedida unidade,

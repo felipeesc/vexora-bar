@@ -17,13 +17,13 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/relatorios")
+@RequestMapping("/api/relatorios")
 @RequiredArgsConstructor
 public class RelatorioController {
 
     private final RelatorioService relatorioService;
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
     @GetMapping("/faturamento/diario")
     public FaturamentoDTO faturamentoDiario(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data
@@ -31,7 +31,7 @@ public class RelatorioController {
         return relatorioService.faturamentoDiario(data != null ? data : LocalDate.now());
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
     @GetMapping("/faturamento/semanal")
     public FaturamentoDTO faturamentoSemanal(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data
@@ -39,7 +39,7 @@ public class RelatorioController {
         return relatorioService.faturamentoSemanal(data != null ? data : LocalDate.now());
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
     @GetMapping("/faturamento/mensal")
     public FaturamentoDTO faturamentoMensal(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data
@@ -47,7 +47,7 @@ public class RelatorioController {
         return relatorioService.faturamentoMensal(data != null ? data : LocalDate.now());
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
     @GetMapping("/produtos/mais-vendidos/dia")
     public List<ProdutoMaisVendidoDto> produtosMaisVendidosDia(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data
@@ -55,7 +55,7 @@ public class RelatorioController {
         return relatorioService.produtosMaisVendidosDia(data != null ? data : LocalDate.now());
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
     @GetMapping("/produtos/mais-vendidos/semana")
     public List<ProdutoMaisVendidoDto> produtosMaisVendidosSemana(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data
@@ -63,7 +63,7 @@ public class RelatorioController {
         return relatorioService.produtosMaisVendidosSemana(data != null ? data : LocalDate.now());
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
     @GetMapping("/produtos/mais-vendidos/mes")
     public List<ProdutoMaisVendidoDto> produtosMaisVendidosMes(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data
@@ -77,7 +77,7 @@ public class RelatorioController {
         return relatorioService.relatorioEstoque();
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
     @GetMapping("/estoque/movimentacoes")
     public List<MovimentacaoResponseDTO> historicoMovimentacoes(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate inicio,

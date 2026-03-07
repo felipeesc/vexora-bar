@@ -31,7 +31,7 @@ public class AuthServiceImpl implements AuthService {
         User user = new User();
         user.setUsername(dto.username());
         user.setPasswordHash(passwordEncoder.encode(dto.password()));
-        user.setRole(dto.role() != null ? dto.role() : Role.ROLE_USER);
+        user.setRole(dto.role() != null ? dto.role() : Role.FUNCIONARIO);
 
         userRepository.save(user);
     }

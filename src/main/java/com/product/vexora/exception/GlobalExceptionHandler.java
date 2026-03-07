@@ -2,6 +2,7 @@ package com.product.vexora.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -85,6 +86,24 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleItemNaoEncontrado(ItemNaoEncontradoException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(error(ex.getMessage()));
+    }
+
+    @ExceptionHandler(PagamentoInvalidoException.class)
+    public ResponseEntity<?> handlePagamentoInvalido(PagamentoInvalidoException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(error(ex.getMessage()));
+    }
+
+    @ExceptionHandler(UnauthorizedRoleException.class)
+    public ResponseEntity<?> handleUnauthorizedRole(UnauthorizedRoleException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(error(ex.getMessage()));
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<?> handleAccessDenied(AccessDeniedException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(error("Acesso negado"));
     }
 
     private Map<String, Object> error(String msg) {

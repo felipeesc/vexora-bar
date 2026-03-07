@@ -1,7 +1,7 @@
 package com.product.vexora.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.product.vexora.enums.CategoriaProduto;
+import com.product.vexora.dto.response.CategoriaResponse;
 import com.product.vexora.enums.UnidadeMedida;
 
 import java.math.BigDecimal;
@@ -11,7 +11,7 @@ import java.util.UUID;
 public record ComandaItemDTO(
         UUID id,
         String nome,
-        CategoriaProduto categoria,
+        CategoriaResponse categoria,
         UnidadeMedida unidade,
         int quantidade,
 
@@ -19,5 +19,7 @@ public record ComandaItemDTO(
         LocalDateTime dataHora,
 
         BigDecimal precoUnitario,
-        BigDecimal totalItem
+        BigDecimal totalItem,
+        boolean cancelado,
+        String motivoCancelamento
 ) {}

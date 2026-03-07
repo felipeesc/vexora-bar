@@ -1,6 +1,6 @@
 package com.product.vexora.dto;
 
-import com.product.vexora.enums.CategoriaProduto;
+import com.product.vexora.dto.response.CategoriaResponse;
 import com.product.vexora.enums.UnidadeMedida;
 
 import java.math.BigDecimal;
@@ -9,7 +9,7 @@ import java.util.UUID;
 public record ProdutoResponseDto(
         UUID id,
         String nome,
-        CategoriaProduto categoria,
+        CategoriaResponse categoria,
         UnidadeMedida unidade,
         BigDecimal precoCompra,
         BigDecimal precoVenda,

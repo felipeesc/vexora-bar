@@ -50,4 +50,11 @@ public class Comanda {
             orphanRemoval = true
     )
     private List<ComandaItem> itens = new ArrayList<>();
+
+    @OneToMany(
+            mappedBy = "comanda",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<Pagamento> pagamentos = new ArrayList<>();
 }

@@ -14,13 +14,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/movimentacoes")
+@RequestMapping("/api/movimentacoes")
 @RequiredArgsConstructor
 public class MovimentacaoController {
 
     private final MovimentacaoService service;
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
     @PostMapping
     public ResponseEntity<MovimentacaoResponseDTO> movimentar(@Valid @RequestBody MovimentacaoDto req) {
         MovimentacaoResponseDTO response = service.realizarMovimentacao(req);

@@ -30,4 +30,11 @@ public class ComandaItem {
     @ManyToOne
     @JoinColumn(name = "comanda_id")
     private Comanda comanda;
+
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean cancelado = false;
+
+    private String motivoCancelamento;
+
+    private LocalDateTime dataCancelamento;
 }

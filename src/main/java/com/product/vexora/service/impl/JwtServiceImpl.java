@@ -3,6 +3,7 @@ package com.product.vexora.service.impl;
 import com.product.vexora.entity.User;
 import com.product.vexora.service.JwtService;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -30,21 +31,32 @@ public class JwtServiceImpl implements JwtService {
         secretKey = Keys.hmacShaKeyFor(keyBytes);
     }
 
+    @Override
     public String generateToken(User user) {
         return Jwts.builder()
                 .setSubject(user.getUsername())
+                .claim("role", user.getRole().name())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(secretKey)
                 .compact();
     }
 
+    @Override
     public String extractUsername(String token) {
         return extractClaims(token).getSubject();
     }
 
+    @Override
     public boolean validateToken(String token, User user) {
-        return extractUsername(token).equals(user.getUsername());
+        try {
+            Claims claims = extractClaims(token);
+            String username = claims.getSubject();
+            boolean notExpired = claims.getExpiration().after(new Date());
+            return username.equals(user.getUsername()) && notExpired;
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
     }
 
     private Claims extractClaims(String token) {

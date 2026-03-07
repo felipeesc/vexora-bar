@@ -1,6 +1,5 @@
 package com.product.vexora.entity;
 
-import com.product.vexora.enums.CategoriaProduto;
 import com.product.vexora.enums.UnidadeMedida;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -24,8 +23,9 @@ public class Produto {
 
     private String nome;
 
-    @Enumerated(EnumType.STRING)
-    private CategoriaProduto categoria;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "categoria_id", nullable = false)
+    private Categoria categoria;
 
     @Enumerated(EnumType.STRING)
     private UnidadeMedida unidade;

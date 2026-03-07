@@ -1,8 +1,8 @@
 package com.product.vexora.service;
 
-import com.product.vexora.dto.ComandaItemRequestDTO;
-import com.product.vexora.dto.ComandaRequestDTO;
-import com.product.vexora.dto.ComandaResponseDTO;
+
+import com.product.vexora.dto.*;
+
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,9 +14,19 @@ public interface ComandaService {
 
     ComandaResponseDTO adicionarItem(ComandaItemRequestDTO dto);
 
-    ComandaResponseDTO removerItem(UUID itemId);
+    ComandaResponseDTO cancelarItem(UUID itemId, CancelItemRequestDTO dto);
 
-    ComandaResponseDTO fecharComanda(UUID id);
+    ComandaResponseDTO fecharComanda(UUID id, FechamentoRequestDTO dto);
+
+    List<ComandaResponseDTO> fecharMesa(Integer mesa, FechamentoMesaRequestDTO dto);
+
+    ComandaResponseDTO dividirComanda(UUID comandaId, SplitComandaRequestDTO dto);
+
+    ComandaResponseDTO transferirItens(UUID comandaOrigemId, TransferItemRequestDTO dto);
+
+    ComandaResponseDTO juntarComandas(MergeComandaRequestDTO dto);
+
+    ComandaResponseDTO reabrirComanda(UUID id);
 
     ComandaResponseDTO calcular(UUID id);
 

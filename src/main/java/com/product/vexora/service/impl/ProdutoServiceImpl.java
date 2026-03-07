@@ -2,8 +2,11 @@ package com.product.vexora.service.impl;
 
 import com.product.vexora.dto.ProdutoRequestDto;
 import com.product.vexora.dto.ProdutoResponseDto;
+import com.product.vexora.dto.response.CategoriaResponse;
+import com.product.vexora.entity.Categoria;
 import com.product.vexora.entity.Produto;
 import com.product.vexora.exception.ProdutoNotFoundException;
+import com.product.vexora.repository.CategoriaRepository;
 import com.product.vexora.repository.ProdutoRepository;
 import com.product.vexora.service.ProdutoService;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +21,7 @@ import java.util.stream.Collectors;
 public class ProdutoServiceImpl implements ProdutoService {
 
     private final ProdutoRepository produtoRepository;
+    private final CategoriaRepository categoriaRepository;
 
     @Override
     public List<ProdutoResponseDto> listarTodos() {
@@ -37,8 +41,11 @@ public class ProdutoServiceImpl implements ProdutoService {
     @Override
     public ProdutoResponseDto atualizar(UUID id, ProdutoRequestDto dto) {
         Produto existente = buscarPorIdEntity(id);
+        Categoria categoria = categoriaRepository.findById(dto.categoriaId())
+                .orElseThrow(() -> new RuntimeException("Categoria não encontrada: " + dto.categoriaId()));
+
         existente.setNome(dto.nome());
-        existente.setCategoria(dto.categoria());
+        existente.setCategoria(categoria);
         existente.setUnidade(dto.unidade());
         existente.setPrecoCompra(dto.precoCompra());
         existente.setPrecoVenda(dto.precoVenda());
@@ -61,9 +68,12 @@ public class ProdutoServiceImpl implements ProdutoService {
     }
 
     private Produto fromRequestDto(ProdutoRequestDto dto) {
+        Categoria categoria = categoriaRepository.findById(dto.categoriaId())
+                .orElseThrow(() -> new RuntimeException("Categoria não encontrada: " + dto.categoriaId()));
+
         Produto produto = new Produto();
         produto.setNome(dto.nome());
-        produto.setCategoria(dto.categoria());
+        produto.setCategoria(categoria);
         produto.setUnidade(dto.unidade());
         produto.setPrecoCompra(dto.precoCompra());
         produto.setPrecoVenda(dto.precoVenda());
@@ -73,10 +83,18 @@ public class ProdutoServiceImpl implements ProdutoService {
     }
 
     private ProdutoResponseDto toResponseDto(Produto produto) {
+        CategoriaResponse categoriaResponse = new CategoriaResponse(
+                produto.getCategoria().getId(),
+                produto.getCategoria().getNome(),
+                produto.getCategoria().getDescricao(),
+                produto.getCategoria().isAtiva(),
+                produto.getCategoria().getCriadoEm()
+        );
+
         return new ProdutoResponseDto(
                 produto.getId(),
                 produto.getNome(),
-                produto.getCategoria(),
+                categoriaResponse,
                 produto.getUnidade(),
                 produto.getPrecoCompra(),
                 produto.getPrecoVenda(),

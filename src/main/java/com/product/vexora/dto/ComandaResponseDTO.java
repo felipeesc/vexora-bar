@@ -20,7 +20,8 @@ public record ComandaResponseDTO(
         LocalDateTime fechamento,
 
         List<ComandaItemDTO> itens,
-        BigDecimal total
+        BigDecimal total,
+        List<PagamentoResponseDTO> pagamentos
 ) {}
 
 

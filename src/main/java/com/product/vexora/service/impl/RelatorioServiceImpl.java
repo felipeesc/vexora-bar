@@ -1,6 +1,7 @@
 package com.product.vexora.service.impl;
 
 import com.product.vexora.dto.*;
+import com.product.vexora.dto.response.CategoriaResponse;
 import com.product.vexora.entity.Produto;
 import com.product.vexora.repository.MovimentacaoRepository;
 import com.product.vexora.repository.ProdutoRepository;
@@ -116,10 +117,19 @@ public class RelatorioServiceImpl implements RelatorioService {
 
     private EstoqueProdutoDTO toEstoqueProdutoDTO(Produto produto) {
         boolean abaixo = produto.getEstoqueAtual().compareTo(produto.getEstoqueMinimo()) < 0;
+
+        CategoriaResponse categoriaResponse = new CategoriaResponse(
+                produto.getCategoria().getId(),
+                produto.getCategoria().getNome(),
+                produto.getCategoria().getDescricao(),
+                produto.getCategoria().isAtiva(),
+                produto.getCategoria().getCriadoEm()
+        );
+
         return new EstoqueProdutoDTO(
                 produto.getId(),
                 produto.getNome(),
-                produto.getCategoria(),
+                categoriaResponse,
                 produto.getUnidade(),
                 produto.getEstoqueAtual(),
                 produto.getEstoqueMinimo(),
