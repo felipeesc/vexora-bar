@@ -1,7 +1,7 @@
 # Vexora API
 
-Vexora é uma aplicação **Spring Boot 4** que implementa autenticação JWT, gerenciamento de usuários e segurança básica com **Spring Security**.
-A Vexora API foi projetada para gerenciar comandas, produtos, estoque e relatórios.
+Vexora é uma aplicação **Spring Boot 4** que implementa autenticação JWT, gerenciamento de usuários e segurança com **Spring Security**.
+A Vexora API foi projetada para gerenciar comandas, produtos, estoque e relatórios para bares e restaurantes.
 
 O projeto utiliza:
 
@@ -11,6 +11,8 @@ O projeto utiliza:
 - **Spring Data JPA**
 - **PostgreSQL**
 - **JWT (io.jsonwebtoken)**
+- **Spring Actuator** (health checks)
+- **Bucket4j** (rate limiting)
 
 ---
 
@@ -35,14 +37,16 @@ cp .env.example .env
 
 | Variável | Descrição | Exemplo |
 |----------|-----------|---------|
-| `JWT_SECRET` | Chave para assinar tokens JWT (min. 32 chars, Base64) | `mK9pL2xR4vN7qW3tY6uI8oP1aS5dF0gH2jK4lZ7xC9vB` |
+| `JWT_SECRET` | Chave para assinar tokens JWT (mín. 44 chars Base64 = 256 bits) | `SUA_CHAVE_BASE64_AQUI` |
+
+> Gere uma chave segura com: `openssl rand -base64 32`
 
 **Variáveis opcionais:**
 
 | Variável | Descrição | Padrão |
 |----------|-----------|--------|
 | `JWT_EXPIRATION` | Tempo de expiração do token (ms) | `86400000` (24h) |
-| `CORS_ORIGINS` | URLs permitidas para CORS | `http://localhost:5173,http://localhost:3000` |
+| `CORS_ORIGINS` | URLs permitidas para CORS, separadas por vírgula | `http://localhost:5173,http://localhost:3000` |
 
 ### 2. Carregar variáveis de ambiente
 
@@ -60,15 +64,32 @@ Get-Content .env | ForEach-Object {
 export $(grep -v '^#' .env | xargs)
 ```
 
-### 3. Rodar a aplicação
+### 3. Rodar o banco de dados com Docker
+
+```bash
+docker run -d --name vexora-postgres \
+  -e POSTGRES_USER=postgres \
+  -e POSTGRES_PASSWORD=postgres \
+  -e POSTGRES_DB=vexora \
+  -p 5433:5432 postgres:16
+```
+
+Se o container já existir:
+```bash
+docker start vexora-postgres
+```
+
+> O banco estará disponível em `localhost:5433` com usuário `postgres` e senha `postgres`.
+
+### 4. Rodar a aplicação
 
 ```bash
 ./mvnw spring-boot:run
 ```
 
-### 4. Primeiro acesso
+### 5. Primeiro acesso
 
-No primeiro boot, o sistema cria um usuário admin com senha aleatória. 
+No primeiro boot, o sistema cria automaticamente um usuário admin com **senha aleatória segura**.
 **Verifique o log** para ver a senha gerada:
 
 ```
@@ -82,33 +103,28 @@ No primeiro boot, o sistema cria um usuário admin com senha aleatória.
 
 ---
 
+## 🔒 Segurança
+
+- **Senhas fortes obrigatórias:** mínimo 8 caracteres, com maiúscula, minúscula, número e caractere especial (`@$!%*?&#`)
+- **JWT sem valor padrão:** a variável `JWT_SECRET` é obrigatória para iniciar a aplicação
+- **Rate limiting:** máximo de 10 req/min por IP em `/auth/login` e `/auth/signup`; 100 req/min para demais endpoints
+- **Roles fixas no signup:** novos usuários são sempre criados como `FUNCIONARIO`; promoção de role é feita somente por `ADMIN`
+- **CORS configurável** via variável de ambiente `CORS_ORIGINS`
+- **Health checks** disponíveis em `/actuator/health` e `/actuator/info` (sem autenticação)
+
+---
+
 ## 📋 Comandas
 
 ### Funcionalidades já implementadas
 
-- **Abrir comanda**  
-  Cria uma nova comanda vinculada a uma mesa e, opcionalmente, a um cliente.
-
-- **Adicionar item à comanda**  
-  Adiciona produtos à comanda aberta e registra automaticamente a **movimentação de saída** no estoque.
-
-- **Remover item da comanda**  
-  Remove um item previamente adicionado e registra a **entrada de estoque** correspondente (cancelamento).
-
-- **Calcular comanda**  
-  Calcula o valor total da comanda em tempo real, sem necessidade de fechá-la.
-
-- **Fechar comanda**  
-  Finaliza a comanda, impedindo novas alterações.
-
-- **Buscar comanda por ID**  
-  Retorna os dados completos de uma comanda específica.
-
-- **Listar / filtrar comandas**  
-  Permite buscar todas as comandas com filtros como:
-    - comandas abertas / fechadas
-    - período de datas
-    - mesa
+- **Abrir comanda** — cria uma nova comanda vinculada a uma mesa e, opcionalmente, a um cliente
+- **Adicionar item à comanda** — adiciona produtos e registra automaticamente a **saída de estoque**
+- **Remover item da comanda** — remove um item e registra a **entrada de estoque** correspondente
+- **Calcular comanda** — calcula o valor total em tempo real, sem fechar a comanda
+- **Fechar comanda** — finaliza a comanda, impedindo novas alterações
+- **Buscar comanda por ID** — retorna os dados completos de uma comanda específica
+- **Listar / filtrar comandas** — busca com filtros de status (aberta/fechada), período de datas e mesa
 
 ---
 
@@ -116,20 +132,11 @@ No primeiro boot, o sistema cria um usuário admin com senha aleatória.
 
 ### Funcionalidades já implementadas
 
-- **Adicionar produto**  
-  Cadastra um novo produto com categoria, unidade de medida e controle de estoque.
-
-- **Editar produto**  
-  Atualiza informações do produto (preço, estoque mínimo, etc).
-
-- **Remover produto**  
-  Exclui um produto do sistema.
-
-- **Buscar produto por ID**  
-  Retorna os detalhes de um produto específico.
-
-- **Listar todos os produtos**  
-  Retorna todos os produtos cadastrados.
+- **Adicionar produto** — cadastra produto com categoria, unidade de medida e controle de estoque
+- **Editar produto** — atualiza informações (preço, estoque mínimo, etc.)
+- **Remover produto** — exclui um produto do sistema
+- **Buscar produto por ID** — retorna os detalhes de um produto específico
+- **Listar produtos com paginação** — suporta `page`, `size`, `sortBy` e `sortDir`
 
 ---
 
@@ -137,51 +144,13 @@ No primeiro boot, o sistema cria um usuário admin com senha aleatória.
 
 ### Funcionalidades já implementadas
 
-- **Faturamento diário**  
-  Retorna o total faturado em um dia específico.
-
-- **Faturamento semanal**  
-  Retorna o total faturado em uma semana específica.
-
-- **Faturamento mensal**  
-  Retorna o total faturado no mês.
-
-- **Produto mais vendido no dia**  
-  Identifica o produto com maior saída diária.
-
-- **Produto mais vendido na semana**  
-  Identifica o produto com maior volume de vendas na semana.
-
-- **Produto mais vendido no mês**  
-  Identifica o produto com maior volume de vendas no mês.
-
-- **Relatório de estoque**  
-  Relatório contendo:
-    - estoque atual de todos os produtos
-    - produtos abaixo do estoque mínimo
-    - histórico de movimentações por período
-
+- **Faturamento diário / semanal / mensal**
+- **Produto mais vendido** (dia, semana, mês)
+- **Relatório de estoque** — estoque atual, produtos abaixo do mínimo e histórico de movimentações
 
 ---
 
-## Rodando o banco de dados com Docker
-
-```bash
-  docker run -d --name vexora-postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=vexora -p 5433:5432 postgres:16
-
-```
-## Caso o container exista basta rodar 
-
-```bash
-  docker start vexora-postgres
-
-
-```
-> O banco estará disponível em `localhost:5433` com usuário `postgres` e senha `postgres`.
-
----
-
-## Configuração do `application.yml`
+## Configuração do `application.yaml`
 
 ```yaml
 spring:
@@ -195,13 +164,14 @@ spring:
     show-sql: true
 
 jwt:
-  secret: ${JWT_SECRET:SEU_TOKEN_BASE64_AQUI}
+  secret: ${JWT_SECRET}           # OBRIGATÓRIO — sem valor padrão
   expiration: ${JWT_EXPIRATION:86400000}
+
+cors:
+  allowed-origins: ${CORS_ORIGINS:http://localhost:5173,http://localhost:3000}
 ```
 
-> O segredo JWT deve ser uma **chave base64 com 256 bits ou mais**, gerada com o método `Keys.secretKeyFor(SignatureAlgorithm.HS256)`.
-> 
-> **Recomendado:** defina a variável de ambiente `JWT_SECRET` ao invés de deixar o segredo no arquivo de configuração.
+> O segredo JWT deve ser uma **chave Base64 com pelo menos 256 bits (44 caracteres)**. Não há valor padrão — a aplicação não iniciará sem esta variável configurada.
 
 ---
 
@@ -209,27 +179,26 @@ jwt:
 
 ### 1. Cadastro de usuário (`signup`)
 
+Novos usuários são criados sempre com role `FUNCIONARIO`.
+
+A senha deve ter **no mínimo 8 caracteres** e conter pelo menos: uma letra maiúscula, uma minúscula, um número e um caractere especial (`@$!%*?&#`).
+
 ```http
 POST /auth/signup
 Content-Type: application/json
 
 {
-  "username": "teste",
-  "password": "123456",
-  "role": "ROLE_USER"
+  "username": "joao.silva",
+  "password": "Senha@123"
 }
 ```
 
 **Exemplo com `curl`:**
 
 ```bash
-  curl -X POST http://localhost:8080/auth/signup \
--H "Content-Type: application/json" \
--d '{
-  "username": "teste",
-  "password": "123456",
-  "role": "ROLE_USER"
-}'
+curl -X POST http://localhost:8080/auth/signup \
+  -H "Content-Type: application/json" \
+  -d '{"username": "joao.silva", "password": "Senha@123"}'
 ```
 
 > Retorna `201 Created` se o usuário for criado com sucesso.
@@ -243,27 +212,26 @@ POST /auth/login
 Content-Type: application/json
 
 {
-  "username": "teste",
-  "password": "123456"
+  "username": "joao.silva",
+  "password": "Senha@123"
 }
 ```
 
 **Exemplo com `curl`:**
 
 ```bash
-  curl -X POST http://localhost:8080/auth/login \
--H "Content-Type: application/json" \
--d '{
-  "username": "teste",
-  "password": "123456"
-}'
+curl -X POST http://localhost:8080/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username": "joao.silva", "password": "Senha@123"}'
 ```
 
 **Resposta:**
 
 ```json
 {
-  "token": "eyJhbGciOiJIUzI1NiJ9..."
+  "token": "eyJhbGciOiJIUzI1NiJ9...",
+  "role": "FUNCIONARIO",
+  "username": "joao.silva"
 }
 ```
 
@@ -276,9 +244,26 @@ Content-Type: application/json
 Para acessar qualquer endpoint protegido, adicione o token JWT no cabeçalho `Authorization`:
 
 ```bash
-  curl -X GET http://localhost:8080/api/xxx \
--H "Authorization: Bearer SEU_TOKEN_AQUI"
+curl -X GET http://localhost:8080/api/produtos \
+  -H "Authorization: Bearer SEU_TOKEN_AQUI"
 ```
+
+---
+
+### 4. Setup inicial de admin (apenas se não houver admin)
+
+Este endpoint só funciona enquanto não existir nenhum `ADMIN` no sistema.
+
+```http
+POST /auth/setup-admin
+Content-Type: application/json
+
+{
+  "username": "joao.silva"
+}
+```
+
+> Após a promoção, este endpoint retorna `403 Forbidden` para todas as requisições seguintes.
 
 ---
 
@@ -288,76 +273,102 @@ Para acessar qualquer endpoint protegido, adicione o token JWT no cabeçalho `Au
 com.product.vexora
 │
 ├── config
+│   ├── CorsConfig.java
+│   ├── DataInitializer.java
 │   ├── JwtAuthenticationFilter.java
+│   ├── RateLimitFilter.java
 │   └── SecurityConfig.java
 │
 ├── controller
 │   ├── AuthController.java
+│   ├── CategoriaController.java
 │   ├── ComandaController.java
 │   ├── MovimentacaoController.java
 │   ├── ProdutoController.java
-│   └── RelatorioController.java
+│   ├── RelatorioController.java
+│   └── UserController.java
 │
 ├── dto
+│   ├── request/
+│   │   ├── CreateCategoriaRequest.java
+│   │   └── CreateUserRequest.java
+│   ├── response/
+│   │   ├── CategoriaResponse.java
+│   │   ├── CurrentUserResponse.java
+│   │   └── UserResponse.java
 │   ├── ComandaItemDTO.java
 │   ├── ComandaItemRequestDTO.java
 │   ├── ComandaRequestDTO.java
 │   ├── ComandaResponseDTO.java
 │   ├── FaturamentoDTO.java
-│   ├── LoginDTO.java
-│   ├── MovimentacaoDTO.java
-│   ├── ProdutoMaisVendidoDTO.java
-│   ├── ProdutoRequestDTO.java
-│   ├── ProdutoResponseDTO.java
-│   └── SignupDTO.java
+│   ├── LoginDto.java
+│   ├── MovimentacaoDto.java
+│   ├── ProdutoMaisVendidoDto.java
+│   ├── ProdutoRequestDto.java
+│   ├── ProdutoResponseDto.java
+│   └── SignupDto.java
 │
 ├── entity
+│   ├── Categoria.java
 │   ├── Comanda.java
 │   ├── ComandaItem.java
-│   ├── Funcionario.java
 │   ├── Movimentacao.java
+│   ├── Pagamento.java
 │   ├── Produto.java
 │   └── User.java
 │
 ├── enums
-│   ├── CategoriaProduto
-│   ├── Role
-│   ├── TipoMovimentacao
-│   └── UnidadeMedida
+│   ├── MetodoPagamento.java
+│   ├── Role.java
+│   ├── TipoMovimentacao.java
+│   └── UnidadeMedida.java
 │
 ├── exception
-│   ├── InvalidPasswordException
-│   ├── UserAlreadyExistsException
-│   └── UserNotFoundException
+│   ├── CategoriaJaExisteException.java
+│   ├── CategoriaNaoEncontradaException.java
+│   ├── ComandaAbertaException.java
+│   ├── ComandaFechadaException.java
+│   ├── ComandaNaoEncontradaException.java
+│   ├── EstoqueInsuficienteException.java
+│   ├── GlobalExceptionHandler.java
+│   ├── InvalidPasswordException.java
+│   ├── ItemNaoEncontradoException.java
+│   ├── MesaObrigatoriaException.java
+│   ├── PagamentoInvalidoException.java
+│   ├── ProdutoNotFoundException.java
+│   ├── UnauthorizedRoleException.java
+│   ├── UserAlreadyExistsException.java
+│   └── UserNotFoundException.java
 │
 ├── repository
-│   ├── ComandaItemRepository
-│   ├── ComandaRepository
-│   ├── MovimentacaoRepository
-│   ├── ProdutoRepository
-│   └── UserRepository
+│   ├── CategoriaRepository.java
+│   ├── ComandaItemRepository.java
+│   ├── ComandaRepository.java
+│   ├── MovimentacaoRepository.java
+│   ├── ProdutoRepository.java
+│   └── UserRepository.java
 │
 ├── service
 │   ├── AuthService (interface e impl)
+│   ├── CategoriaService (interface e impl)
 │   ├── ComandaService (interface e impl)
 │   ├── JwtService (interface e impl)
 │   ├── MovimentacaoService (interface e impl)
 │   ├── ProdutoService (interface e impl)
 │   ├── RelatorioService (interface e impl)
 │   └── UserService (interface e impl)
-└──── 
-
-
-
-
+│
+└── VexoraApplication.java
 ```
 
 ---
 
 ## Observações
 
-- **Chave JWT:** Certifique-se de usar uma chave base64 com pelo menos **256 bits**.
-- **Testes:** Utilize `curl` ou Postman para testar os endpoints.
-- **Banco:** O Docker garante que o PostgreSQL esteja isolado e fácil de resetar.
+- **Chave JWT:** variável de ambiente `JWT_SECRET` é **obrigatória**; use Base64 com no mínimo 256 bits (44 caracteres).
+- **Admin:** na primeira execução, a senha do admin é gerada aleatoriamente e exibida no log.
+- **Rate limiting:** endpoints de autenticação estão limitados a 10 req/min por IP.
+- **Testes:** utilize `curl`, Postman ou a coleção Bruno em `bruno-collection/`.
+- **Banco:** o Docker garante que o PostgreSQL esteja isolado e fácil de resetar.
 
 ---
