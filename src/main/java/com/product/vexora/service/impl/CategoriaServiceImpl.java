@@ -5,6 +5,8 @@ import com.product.vexora.dto.response.CategoriaResponse;
 import com.product.vexora.entity.Categoria;
 import com.product.vexora.entity.User;
 import com.product.vexora.enums.Role;
+import com.product.vexora.exception.CategoriaJaExisteException;
+import com.product.vexora.exception.CategoriaNaoEncontradaException;
 import com.product.vexora.exception.UnauthorizedRoleException;
 import com.product.vexora.repository.CategoriaRepository;
 import com.product.vexora.service.CategoriaService;
@@ -50,7 +52,7 @@ public class CategoriaServiceImpl implements CategoriaService {
 
         // Verificar se a categoria já existe
         if (categoriaRepository.existsByNome(request.nome())) {
-            throw new RuntimeException("Categoria com esse nome já existe");
+            throw new CategoriaJaExisteException(request.nome());
         }
 
         Categoria categoria = new Categoria();
@@ -65,7 +67,7 @@ public class CategoriaServiceImpl implements CategoriaService {
     @Override
     public CategoriaResponse obterCategoriaPorId(UUID id) {
         Categoria categoria = categoriaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Categoria não encontrada"));
+                .orElseThrow(() -> new CategoriaNaoEncontradaException(id));
         return toCategoriaResponse(categoria);
     }
 
@@ -80,12 +82,12 @@ public class CategoriaServiceImpl implements CategoriaService {
         }
 
         Categoria categoria = categoriaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Categoria não encontrada"));
+                .orElseThrow(() -> new CategoriaNaoEncontradaException(id));
 
         // Verificar se o novo nome já existe em outra categoria
         if (!categoria.getNome().equals(request.nome()) &&
             categoriaRepository.existsByNome(request.nome())) {
-            throw new RuntimeException("Categoria com esse nome já existe");
+            throw new CategoriaJaExisteException(request.nome());
         }
 
         categoria.setNome(request.nome());
@@ -106,7 +108,7 @@ public class CategoriaServiceImpl implements CategoriaService {
         }
 
         Categoria categoria = categoriaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Categoria não encontrada"));
+                .orElseThrow(() -> new CategoriaNaoEncontradaException(id));
 
         // Soft delete - marcar como inativa ao invés de deletar
         categoria.setAtiva(false);

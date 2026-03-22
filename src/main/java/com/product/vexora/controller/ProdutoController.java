@@ -5,12 +5,15 @@ import com.product.vexora.dto.ProdutoResponseDto;
 import com.product.vexora.service.ProdutoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -22,8 +25,17 @@ public class ProdutoController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping
-    public List<ProdutoResponseDto> list() {
-        return produtoService.listarTodos();
+    public Page<ProdutoResponseDto> list(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "nome") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir
+    ) {
+        Sort sort = sortDir.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+        return produtoService.listarTodos(pageable);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")

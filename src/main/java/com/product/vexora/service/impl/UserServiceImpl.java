@@ -5,6 +5,7 @@ import com.product.vexora.dto.response.UserResponse;
 import com.product.vexora.entity.User;
 import com.product.vexora.enums.Role;
 import com.product.vexora.exception.UnauthorizedRoleException;
+import com.product.vexora.exception.UserAlreadyExistsException;
 import com.product.vexora.exception.UserNotFoundException;
 import com.product.vexora.repository.UserRepository;
 import com.product.vexora.service.UserService;
@@ -54,7 +55,7 @@ public class UserServiceImpl implements UserService {
 
         // Verificar se o usuário já existe
         if (userRepository.existsByUsername(request.username())) {
-            throw new RuntimeException("Usuário com esse username já existe");
+            throw new UserAlreadyExistsException(request.username());
         }
 
         User newUser = new User();

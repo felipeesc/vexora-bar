@@ -2,13 +2,14 @@ package com.product.vexora.service;
 
 import com.product.vexora.dto.ProdutoRequestDto;
 import com.product.vexora.dto.ProdutoResponseDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 import java.util.UUID;
 
 public interface ProdutoService {
 
-    List<ProdutoResponseDto> listarTodos();
+    Page<ProdutoResponseDto> listarTodos(Pageable pageable);
 
     ProdutoResponseDto criar(ProdutoRequestDto dto);
 

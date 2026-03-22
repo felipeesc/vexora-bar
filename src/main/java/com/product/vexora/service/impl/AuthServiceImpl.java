@@ -31,7 +31,8 @@ public class AuthServiceImpl implements AuthService {
         User user = new User();
         user.setUsername(dto.username());
         user.setPasswordHash(passwordEncoder.encode(dto.password()));
-        user.setRole(dto.role() != null ? dto.role() : Role.FUNCIONARIO);
+        // SEGURANÇA: Sempre criar como FUNCIONARIO - promoção apenas via ADMIN
+        user.setRole(Role.FUNCIONARIO);
 
         userRepository.save(user);
     }

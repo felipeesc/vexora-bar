@@ -201,16 +201,14 @@ public class ComandaServiceImpl implements ComandaService {
         // Calcular total consolidado de todas as comandas da mesa
         BigDecimal totalMesa = BigDecimal.ZERO;
         for (Comanda c : abertas) {
-            ComandaResponseDTO preview = toResponse(c);
-            totalMesa = totalMesa.add(preview.total());
+            totalMesa = totalMesa.add(toResponse(c).total());
         }
 
         validarPagamentos(dto.pagamentos(), totalMesa);
 
         LocalDateTime agora = LocalDateTime.now();
 
-        // Distribuir pagamentos proporcionalmente entre as comandas
-        List<ComandaResponseDTO> resultado = new ArrayList<>();
+        // Marcar todas as comandas como fechadas (sem salvar ainda)
         for (int i = 0; i < abertas.size(); i++) {
             Comanda comanda = abertas.get(i);
 
@@ -223,11 +221,19 @@ public class ComandaServiceImpl implements ComandaService {
 
             comanda.setAberta(false);
             comanda.setFechamento(agora);
-            saveComanda(comanda);
-            resultado.add(toResponse(comanda));
         }
 
-        return resultado;
+        // Persistir todas de uma vez — evita múltiplos flushes parciais
+        // que poderiam violar constraint antes de todas as linhas serem atualizadas
+        try {
+            comandaRepository.saveAll(abertas);
+        } catch (DataIntegrityViolationException ex) {
+            throw new ComandaAbertaException(mesa, "fechamento de mesa");
+        }
+
+        return abertas.stream()
+                .map(this::toResponse)
+                .toList();
     }
 
     private void validarPagamentos(List<PagamentoDTO> pagamentos, BigDecimal totalEsperado) {

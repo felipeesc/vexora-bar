@@ -6,14 +6,12 @@ import com.product.vexora.entity.User;
 import com.product.vexora.enums.Role;
 import com.product.vexora.repository.UserRepository;
 import com.product.vexora.service.AuthService;
-import com.product.vexora.service.JwtService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -22,7 +20,6 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthService authService;
-    private final JwtService jwtService;
     private final UserRepository userRepository;
 
     @PostMapping("/signup")
@@ -60,8 +57,7 @@ public class AuthController {
             return ResponseEntity.badRequest().body(Map.of("message", "username é obrigatório"));
         }
 
-        User user = userRepository.findByUsername(username)
-                .orElse(null);
+        User user = userRepository.findByUsername(username).orElse(null);
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("message", "Usuário não encontrado: " + username));

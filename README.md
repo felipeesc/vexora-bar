@@ -12,6 +12,75 @@ O projeto utiliza:
 - **PostgreSQL**
 - **JWT (io.jsonwebtoken)**
 
+---
+
+## 🚀 Como Rodar
+
+### Pré-requisitos
+
+- Java 17+
+- PostgreSQL rodando na porta 5433 (ou configure no `application.yaml`)
+- Maven
+
+### 1. Configurar variáveis de ambiente
+
+```bash
+# Copie o arquivo de exemplo
+cp .env.example .env
+
+# Edite o .env com suas configurações (ou use os valores padrão para dev)
+```
+
+**Variáveis obrigatórias:**
+
+| Variável | Descrição | Exemplo |
+|----------|-----------|---------|
+| `JWT_SECRET` | Chave para assinar tokens JWT (min. 32 chars, Base64) | `mK9pL2xR4vN7qW3tY6uI8oP1aS5dF0gH2jK4lZ7xC9vB` |
+
+**Variáveis opcionais:**
+
+| Variável | Descrição | Padrão |
+|----------|-----------|--------|
+| `JWT_EXPIRATION` | Tempo de expiração do token (ms) | `86400000` (24h) |
+| `CORS_ORIGINS` | URLs permitidas para CORS | `http://localhost:5173,http://localhost:3000` |
+
+### 2. Carregar variáveis de ambiente
+
+**Windows PowerShell:**
+```powershell
+Get-Content .env | ForEach-Object { 
+    if ($_ -match '^([^#].+?)=(.*)$') { 
+        [System.Environment]::SetEnvironmentVariable($matches[1], $matches[2], 'Process') 
+    } 
+}
+```
+
+**Linux/Mac/Git Bash:**
+```bash
+export $(grep -v '^#' .env | xargs)
+```
+
+### 3. Rodar a aplicação
+
+```bash
+./mvnw spring-boot:run
+```
+
+### 4. Primeiro acesso
+
+No primeiro boot, o sistema cria um usuário admin com senha aleatória. 
+**Verifique o log** para ver a senha gerada:
+
+```
+═══════════════════════════════════════════════════════════════
+✅ Usuário administrador padrão criado!
+📧 Username: admin
+🔑 Senha: [senha-gerada-aqui]
+⚠️  IMPORTANTE: Altere esta senha após o primeiro login!
+═══════════════════════════════════════════════════════════════
+```
+
+---
 
 ## 📋 Comandas
 

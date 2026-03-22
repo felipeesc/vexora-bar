@@ -10,17 +10,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Unicidade controlada por partial unique index no PostgreSQL (ver migration.sql):
+ *
+ *   CREATE UNIQUE INDEX uq_comanda_mesa_identificador_aberta
+ *     ON tb_comanda (mesa, identificador)
+ *     WHERE aberta = true;
+ *
+ * Garante: somente uma comanda ABERTA por mesa+identificador.
+ * Permite: múltiplas comandas FECHADAS com o mesmo identificador.
+ */
 @Getter
 @Setter
 @Entity
-@Table(
-        name = "tb_comanda",
-        uniqueConstraints = {
-                @UniqueConstraint(
-                        columnNames = {"mesa", "identificador", "aberta"}
-                )
-        }
-)
+@Table(name = "tb_comanda")
 public class Comanda {
 
     @Id

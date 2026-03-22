@@ -5,16 +5,17 @@ import com.product.vexora.dto.ProdutoResponseDto;
 import com.product.vexora.dto.response.CategoriaResponse;
 import com.product.vexora.entity.Categoria;
 import com.product.vexora.entity.Produto;
+import com.product.vexora.exception.CategoriaNaoEncontradaException;
 import com.product.vexora.exception.ProdutoNotFoundException;
 import com.product.vexora.repository.CategoriaRepository;
 import com.product.vexora.repository.ProdutoRepository;
 import com.product.vexora.service.ProdutoService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,11 +25,9 @@ public class ProdutoServiceImpl implements ProdutoService {
     private final CategoriaRepository categoriaRepository;
 
     @Override
-    public List<ProdutoResponseDto> listarTodos() {
-        return produtoRepository.findAll()
-                .stream()
-                .map(this::toResponseDto)
-                .collect(Collectors.toList());
+    public Page<ProdutoResponseDto> listarTodos(Pageable pageable) {
+        return produtoRepository.findAll(pageable)
+                .map(this::toResponseDto);
     }
 
     @Override
@@ -42,7 +41,7 @@ public class ProdutoServiceImpl implements ProdutoService {
     public ProdutoResponseDto atualizar(UUID id, ProdutoRequestDto dto) {
         Produto existente = buscarPorIdEntity(id);
         Categoria categoria = categoriaRepository.findById(dto.categoriaId())
-                .orElseThrow(() -> new RuntimeException("Categoria não encontrada: " + dto.categoriaId()));
+                .orElseThrow(() -> new CategoriaNaoEncontradaException(dto.categoriaId()));
 
         existente.setNome(dto.nome());
         existente.setCategoria(categoria);
@@ -69,7 +68,7 @@ public class ProdutoServiceImpl implements ProdutoService {
 
     private Produto fromRequestDto(ProdutoRequestDto dto) {
         Categoria categoria = categoriaRepository.findById(dto.categoriaId())
-                .orElseThrow(() -> new RuntimeException("Categoria não encontrada: " + dto.categoriaId()));
+                .orElseThrow(() -> new CategoriaNaoEncontradaException(dto.categoriaId()));
 
         Produto produto = new Produto();
         produto.setNome(dto.nome());

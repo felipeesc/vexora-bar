@@ -23,6 +23,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http,
             JwtAuthenticationFilter jwtFilter,
+            RateLimitFilter rateLimitFilter,
             CorsConfigurationSource corsConfigurationSource
     ) throws Exception {
 
@@ -34,9 +35,16 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
+                        // Endpoints públicos
                         .requestMatchers("/auth/login", "/auth/signup", "/auth/setup-admin").permitAll()
+                        // Actuator health checks
+                        .requestMatchers("/actuator/health", "/actuator/info").permitAll()
+                        // Todos os outros requerem autenticação
                         .anyRequest().authenticated()
                 )
+                // Rate limit filter antes de tudo
+                .addFilterBefore(rateLimitFilter, UsernamePasswordAuthenticationFilter.class)
+                // JWT filter
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

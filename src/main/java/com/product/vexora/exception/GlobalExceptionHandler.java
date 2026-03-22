@@ -52,6 +52,18 @@ public class GlobalExceptionHandler {
                 .body(error(ex.getMessage()));
     }
 
+    @ExceptionHandler(CategoriaNaoEncontradaException.class)
+    public ResponseEntity<?> handleCategoriaNaoEncontrada(CategoriaNaoEncontradaException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(error(ex.getMessage()));
+    }
+
+    @ExceptionHandler(CategoriaJaExisteException.class)
+    public ResponseEntity<?> handleCategoriaJaExiste(CategoriaJaExisteException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(error(ex.getMessage()));
+    }
+
     @ExceptionHandler(EstoqueInsuficienteException.class)
     public ResponseEntity<?> handleEstoqueInsuficiente(EstoqueInsuficienteException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
